@@ -32,6 +32,7 @@
       "helpers/*": ["./src/helpers/*"],
       "pages/*": ["./src/pages/*"],
       "styles/*": ["./src/styles/*"],
+      "types/*": ["./src/tyles/*"],
 
     }
   },

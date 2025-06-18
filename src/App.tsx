@@ -1,59 +1,65 @@
 // App.tsx
 import { useEffect, useState } from 'react';
-import {
-  Container,
-  Form,
-  Button,
-  Card,
-  Stack,
-  InputGroup,
-} from 'react-bootstrap';
-import type { Note } from './types';
-import { BsPencil, BsPlusCircle, BsSearch, BsTrash } from 'react-icons/bs';
-
+import { Container, Card } from 'react-bootstrap';
+import NoteForm from 'components/NoteForm';
+import NoteCard from 'components/NoteCard';
+import SearchBar from 'components/SearchBar';
+import type { Note } from '@/types';
+import { v4 as uuidv4 } from 'uuid';
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
+
+  const [loaded, setLoaded] = useState(false);
 
   useEffect(() => {
     const saved = localStorage.getItem('notes');
-    if (saved) setNotes(JSON.parse(saved));
+    if (saved) {
+      try {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) {
+          setNotes(parsed);
+        }
+      } catch (e) {
+        console.error('Lỗi khi parse notes từ localStorage:', e);
+      }
+    }
+    setLoaded(true);
   }, []);
 
   useEffect(() => {
-    localStorage.setItem('notes', JSON.stringify(notes));
-  }, [notes]);
+    if (loaded) {
+      localStorage.setItem('notes', JSON.stringify(notes));
+    }
+  }, [notes, loaded]);
+
 
   const handleSave = () => {
     if (!title.trim() || !content.trim()) return;
-    const newNote = { title, content };
 
-    if (editingIndex !== null) {
-      const updated = [...notes];
-      updated[editingIndex] = newNote;
-      setNotes(updated);
-      setEditingIndex(null);
-    } else {
-      setNotes([...notes, newNote]);
-    }
+    const newNote: Note = {
+      id: uuidv4(),
+      title,
+      content
+    };
 
+    setNotes([newNote, ...notes]);
     setTitle('');
     setContent('');
   };
 
-  const handleEdit = (index: number) => {
-    const note = notes[index];
-    setTitle(note.title);
-    setContent(note.content);
-    setEditingIndex(index);
+  const handleDelete = (id: string) => {
+    setNotes(notes.filter((note) => note.id !== id));
   };
 
-  const handleDelete = (index: number) => {
-    const updated = notes.filter((_, i) => i !== index);
-    setNotes(updated);
+  const handleSaveEdit = (id: string, newTitle: string, newContent: string) => {
+    setNotes(notes.map(note =>
+      note.id === id ? { ...note, title: newTitle, content: newContent } : note
+    ));
+    setEditingId(null);
   };
 
   const filteredNotes = notes.filter(
@@ -68,75 +74,28 @@ function App() {
         <Container><h4 className="fw-bold mb-0">My Notes</h4></Container>
       </Card>
       <Container className="py-1">
-
-        <InputGroup className="mb-4 search-group" >
-          <InputGroup.Text className="search-icon">
-            <BsSearch />
-          </InputGroup.Text>
-          <Form.Control
-            type="text"
-            placeholder="Search notes..."
-            value={searchTerm}
-            onChange={(e) => setSearchTerm(e.target.value)}
-            className="search-input"
+        <SearchBar searchTerm={searchTerm} setSearchTerm={setSearchTerm} />
+        <NoteForm
+          title={title}
+          content={content}
+          setTitle={setTitle}
+          setContent={setContent}
+          onSave={handleSave}
+        />
+        {filteredNotes.map((note) => (
+          <NoteCard
+            key={note.id}
+            note={note}
+            isEditing={editingId === note.id}
+            onEdit={() => setEditingId(note.id)}
+            onDelete={() => handleDelete(note.id)}
+            onSaveEdit={(newTitle, newContent) => handleSaveEdit(note.id, newTitle, newContent)}
+            onCancelEdit={() => setEditingId(null)}
           />
-        </InputGroup>
-
-
-        <Card className="p-4 mb-4 border-0">
-          <h6 className="mb-3 card__title">Create a new note</h6>
-          <Form.Group className="mb-2">
-            <Form.Label className='form__label'>Title</Form.Label>
-            <Form.Control
-              type="text"
-              placeholder="Note title"
-              className='form__control'
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-            />
-          </Form.Group>
-
-          <Form.Group className="mb-3 mt-2">
-            <Form.Label className='form__label'>Content</Form.Label>
-            <Form.Control
-              as="textarea"
-              placeholder="Write your note here..."
-              value={content}
-              className='form__control'
-              onChange={(e) => setContent(e.target.value)}
-              style={{ height: '100px' }}
-            />
-          </Form.Group>
-
-          <div className="text-end">
-            <Button variant="success" onClick={handleSave}>
-              <BsPlusCircle className="me-1" />
-              {editingIndex !== null ? 'Update Note' : 'Save Note'}
-            </Button>
-          </div>
-        </Card>
-
-        {filteredNotes.map((note, index) => (
-          <Card key={index} className="mb-3 border-start border-success border-3 rounded-3">
-            <Card.Body>
-              <Card.Title className="fw-semibold small">{note.title}</Card.Title>
-              <Card.Text className="text-muted small">{note.content}</Card.Text>
-              <div className="text-end">
-                <Stack direction="horizontal" gap={2} className="justify-content-end">
-                  <Button variant="outline-secondary" size="sm" onClick={() => handleEdit(index)}>
-                    <BsPencil className="me-1" />
-                  </Button>
-                  <Button variant="danger" size="sm" onClick={() => handleDelete(index)}>
-                    <BsTrash />
-                  </Button>
-                </Stack>
-              </div>
-            </Card.Body>
-          </Card>
         ))}
+
       </Container>
     </>
-
   );
 }
 
