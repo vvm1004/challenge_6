@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Card, Button, Stack, Form } from 'react-bootstrap';
 import { BsPencil, BsTrash, BsCheck, BsX } from 'react-icons/bs';
 import type { NoteCardProps } from '../types';
+import { toast } from 'react-toastify';
 
 function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit }: NoteCardProps) {
   const [editTitle, setEditTitle] = useState(note.title);
@@ -45,7 +46,7 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
                 const trimmedTitle = editTitle.trim();
                 const trimmedContent = editContent.trim();
                 if (!trimmedTitle || !trimmedContent) {
-                  alert("Title and content cannot be empty.");
+                  toast.error("Title and content cannot be empty.");
                   return;
                 }
                 onSaveEdit(trimmedTitle, trimmedContent);

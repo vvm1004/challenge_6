@@ -6,6 +6,7 @@ import NoteCard from 'components/NoteCard';
 import SearchBar from 'components/SearchBar';
 import type { Note } from '@/types';
 import { v4 as uuidv4 } from 'uuid';
+import { toast } from 'react-toastify';
 function App() {
   const [notes, setNotes] = useState<Note[]>([]);
   const [title, setTitle] = useState('');
@@ -39,10 +40,9 @@ function App() {
 
   const handleSave = () => {
     if (!title.trim() || !content.trim()) {
-      alert("Title and content cannot be empty.");
+      toast.error("Title and content cannot be empty.");
       return;
     }
-
     const newNote: Note = {
       id: uuidv4(),
       title: title.trim(),
