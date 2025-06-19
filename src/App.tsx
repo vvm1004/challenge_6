@@ -38,7 +38,10 @@ function App() {
 
 
   const handleSave = () => {
-    if (!title.trim() || !content.trim()) return;
+    if (!title.trim() || !content.trim()) {
+      alert("Title and content cannot be empty.");
+      return;
+    }
 
     const newNote: Note = {
       id: uuidv4(),
