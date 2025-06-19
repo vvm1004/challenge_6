@@ -9,7 +9,7 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
 
   if (isEditing) {
     return (
-      <Card className="mb-3 border-0 rounded-start note-card__search">
+      <Card className="mb-3 border-0 rounded-start note-card__edit">
         <Card.Body>
           <Form.Group className="mb-3">
             <Form.Control
@@ -17,7 +17,7 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
               value={editTitle}
               onChange={(e) => setEditTitle(e.target.value)}
               placeholder="Title"
-              className='note-card__search-title'
+              className='note-card__edit-title'
             />
           </Form.Group>
           <Form.Group className="mb-2">
@@ -27,7 +27,7 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
               onChange={(e) => setEditContent(e.target.value)}
               placeholder="Content"
               style={{ height: '120px' }}
-              className='note-card__search-content'
+              className='note-card__edit-content'
 
             />
           </Form.Group>
