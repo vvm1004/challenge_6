@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Card, Button, Stack, Form } from 'react-bootstrap';
 import { BsPencil, BsTrash, BsCheck, BsX } from 'react-icons/bs';
 import type { NoteCardProps } from '../types';
@@ -7,6 +7,11 @@ import { toast } from 'react-toastify';
 function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit }: NoteCardProps) {
   const [editTitle, setEditTitle] = useState(note.title);
   const [editContent, setEditContent] = useState(note.content);
+
+  useEffect(() => {
+    setEditTitle(note.title);
+    setEditContent(note.content);
+  }, [note]);
 
   if (isEditing) {
     return (
@@ -67,9 +72,9 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
       className="mb-3 border-0 rounded-start note-card"
     >
       <Card.Body>
-        <Card.Title className="note-card__title">{note.title}</Card.Title>
-        <Card.Text className="note-card__content">{note.content}</Card.Text>
-        <div className="text-end">
+      <Card.Title className="note-card__title">{note.title}</Card.Title>
+      <Card.Text className="note-card__content">{note.content}</Card.Text>
+      <div className="text-end">
           <Stack direction="horizontal" gap={2} className="justify-content-end">
             <Button variant="outline-secondary" size="sm" onClick={onEdit}>
               <BsPencil className="me-1" />

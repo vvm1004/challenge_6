@@ -59,15 +59,12 @@ function App() {
   };
 
   const handleSaveEdit = (id: string, newTitle: string, newContent: string) => {
-    const trimmedTitle = newTitle.trim();
-    const trimmedContent = newContent.trim();
-  
+    
     setNotes(notes.map(note =>
-      note.id === id ? { ...note, title: trimmedTitle, content: trimmedContent } : note
+      note.id === id ? { ...note, title: newTitle, content: newContent } : note
     ));
     setEditingId(null);
   };
-  
 
   const filteredNotes = notes.filter(
     (note) =>
