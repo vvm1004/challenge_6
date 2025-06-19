@@ -41,7 +41,15 @@ function NoteCard({ note, isEditing, onEdit, onDelete, onSaveEdit, onCancelEdit 
             <Button
               variant="success"
               size="sm"
-              onClick={() => onSaveEdit(editTitle, editContent)}
+              onClick={() => {
+                const trimmedTitle = editTitle.trim();
+                const trimmedContent = editContent.trim();
+                if (!trimmedTitle || !trimmedContent) {
+                  alert("Title and content cannot be empty.");
+                  return;
+                }
+                onSaveEdit(trimmedTitle, trimmedContent);
+              }}
             >
               <BsCheck className="me-1" />
               Save

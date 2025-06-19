@@ -42,8 +42,8 @@ function App() {
 
     const newNote: Note = {
       id: uuidv4(),
-      title,
-      content
+      title: title.trim(),
+      content: content.trim(),
     };
 
     setNotes([newNote, ...notes]);
